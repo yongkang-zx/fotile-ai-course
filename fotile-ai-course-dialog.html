@@ -368,7 +368,7 @@
       </div>
       <div class="sb-nav-item" data-tab="questionnaire">
         <span class="sb-nav-icon">📋</span> 需求问卷
-        <span class="sb-nav-badge">8题</span>
+        <span class="sb-nav-badge">10题</span>
       </div>
       <div class="sb-nav-item" data-tab="course">
         <span class="sb-nav-icon">🎓</span> 课程设计
@@ -397,7 +397,7 @@
     <div class="content" id="mainContent"></div>
     <div class="status-bar">
       <span class="status-item"><span class="status-dot"></span> 状态: 草稿中</span>
-      <span class="status-item">问卷: 8 题 · 5 部分</span>
+      <span class="status-item">问卷: 10 题 · 5 部分</span>
       <span class="status-item">课程: 3 阶段 · 8 模块</span>
       <span class="status-item">更新: 2026-07-05</span>
     </div>
@@ -476,40 +476,42 @@ const data = {
     parts: [
       {
         title: '基础信息',
-        sub: '2 题，画像 + 意愿初筛',
+        sub: '1 题，基础画像',
         questions: [
           { num: 1, title: '组别 / 姓名', type: '文本', opts: '', purpose: '体系分类 + 实名标识' },
-          { num: 2, title: '是否有意愿参与 AI 学习？', type: '单选', opts: '是 / 否 / 考虑中', purpose: '初筛参与人群' },
         ]
       },
       {
         title: 'AI 现状摸底',
-        sub: '2 题，能力基线 + 工具使用地图',
+        sub: '3 题，能力基线 + 工具使用地图',
         questions: [
-          { num: 3, title: '自评 AI 工具熟悉度', type: '单选 5档', opts: '完全不了解 → 偶尔使用 → 基本掌握 → 熟练使用 → 日常高频使用', purpose: '决定课程起点（扫盲 vs 进阶）' },
-          { num: 4, title: '用过哪些 AI 工具？最常用在什么场景？', type: '多选（工具）+ 多选（场景）', opts: '工具：ChatGPT / 通义千问 / Kimi / 文心一言 / Copilot / Cursor / Notion AI / 其他　｜　场景：写作润色 / 信息检索 / 数据分析 / 代码辅助 / PPT制作 / 翻译 / 其他', purpose: '摸清工具体系 & 高频应用域' },
+          { num: 2, title: '自评 AI 工具熟悉度', type: '单选 5档', opts: '完全不了解 → 偶尔使用 → 基本掌握 → 熟练使用 → 日常高频使用', purpose: '决定课程起点（扫盲 vs 进阶）' },
+          { num: 3, title: '用过哪些 AI 工具？', type: '多选', opts: '豆包 / Kimi / ChatGPT / Gemini / WorkBuddy / Codex / Claude Code / 通义千问 / 文心一言 / Copilot / Cursor / Notion AI / DeepSeek / 其他', purpose: '摸清当前工具体系，了解主流覆盖度' },
+          { num: 4, title: '最常用 AI 在什么场景？', type: '多选', opts: '写作润色 / 信息检索 / 数据分析 / 代码辅助 / PPT制作 / 翻译 / 知识管理 / 其他', purpose: '识别高频应用域，作为课程案例切入点' },
         ]
       },
       {
-        title: '课程学习需求',
-        sub: '1 题，直接决定课程内容方向',
+        title: '学习意愿 & 需求',
+        sub: '3 题，意愿筛选 + 课程方向决策',
         questions: [
-          { num: 5, title: '如果有 AI 学习，你认为哪些内容是需要的？', type: '多选', opts: '大模型横评 / 术语速览 / 案例演示 / 其他（可补充）', purpose: '核心课程方向收集——直接决定内容权重' },
+          { num: 5, title: '是否有意愿参与 AI 学习？', type: '单选', opts: '是 / 否 / 考虑中', purpose: '初筛参与人群' },
+          { num: 6, title: '如果有 AI 学习，你认为哪些内容是需要的？', type: '多选', opts: '大模型横评 / 术语速览 / 案例演示 / 其他（可补充）', purpose: '核心课程方向收集——直接决定内容权重' },
+          { num: 7, title: '你希望课程设计更偏向哪个方向？', type: '单选', opts: '国产优先（工具更方便获取、落地更快） / 全球视野（紧跟前沿工具和趋势） / 两者兼顾（以国产为主，适当引入全球视角）', purpose: '决定课程内容国产 vs 国际比例' },
         ]
       },
       {
         title: '场景痛点深挖',
         sub: '2 题，开放式捕获真实需求',
         questions: [
-          { num: 6, title: '日常工作中，哪些重复性高的事让你觉得「要是有个 AI 就好了」？', type: '开放式（可跳过）', opts: '', purpose: '直接捕获痛点和真实场景' },
-          { num: 7, title: '你所在的体系中，哪些环节可能是 AI 协同的切入点？', type: '开放式（可选）', opts: '', purpose: '体系视角，拓展覆盖面' },
+          { num: 8, title: '日常工作中，哪些重复性高的事让你觉得「要是有个 AI 就好了」？', type: '开放式（可跳过）', opts: '例如：每周手动汇总报表、反复回复类似的问题……', purpose: '直接捕获痛点和真实场景' },
+          { num: 9, title: '你所在的体系中，哪些环节可能是 AI 协同的切入点？', type: '开放式（可选）', opts: '', purpose: '体系视角，拓展覆盖面' },
         ]
       },
       {
         title: '共创意愿',
-        sub: '1 题，招募课程共创伙伴',
+        sub: '2 题，招募课程共创伙伴',
         questions: [
-          { num: 8, title: '是否愿意成为课程共创伙伴，参与后续课程设计与迭代？', type: '单选', opts: '是 / 否 / 考虑中', purpose: '同步完成伙伴招募' },
+          { num: 10, title: '是否愿意成为课程共创伙伴，参与后续课程设计与迭代？', type: '单选', opts: '是 / 否 / 考虑中', purpose: '同步完成伙伴招募' },
         ]
       },
     ],
@@ -720,29 +722,26 @@ function renderPanel() {
     p.innerHTML = `
       <div class="notif-label" style="margin-bottom:8px">问卷参数</div>
       <table class="tbl"><tbody>
-        <tr><td style="font-weight:600;color:var(--text)">总题数</td><td>8 题（核心）</td></tr>
-        <tr><td style="font-weight:600;color:var(--text)">预计耗时</td><td>3–5 分钟</td></tr>
-        <tr><td style="font-weight:600;color:var(--text)">结构</td><td>5 段式：信息 → 基线 → 需求 → 痛点 → 招募</td></tr>
-        <tr><td style="font-weight:600;color:var(--text)">风格</td><td>聚焦精简，每题有目的</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">总题数</td><td>10 题（核心）</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">预计耗时</td><td>4–6 分钟</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">结构</td><td>5 段式：画像 → 摸底 → 意愿&需求 → 痛点 → 招募</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">风格</td><td>聚焦精简，每题有明确目的</td></tr>
         <tr><td style="font-weight:600;color:var(--text)">目标人群</td><td>26届校招，岗位体系多元</td></tr>
       </tbody></table>
       <div class="notif-label" style="margin:16px 0 8px">问题类型分布</div>
       <table class="tbl"><tbody>
         <tr><td>文本</td><td>1 题</td></tr>
-        <tr><td>单选</td><td>3 题（意愿/熟悉度/共创）</td></tr>
-        <tr><td>多选</td><td>2 题（工具+场景/学习需求）</td></tr>
+        <tr><td>单选</td><td>4 题（熟悉度/意愿/课程定位/共创）</td></tr>
+        <tr><td>多选</td><td>3 题（工具/场景/课程内容）</td></tr>
         <tr><td>开放式</td><td>2 题（含1题可跳过+1题可选）</td></tr>
       </tbody></table>
-      <div class="notif-label" style="margin:16px 0 8px">核心变化</div>
+      <div class="notif-label" style="margin:16px 0 8px">v2 升级点</div>
       <p style="font-size:12px;color:var(--text2);line-height:1.8">
-        对比原版 15 题：<br>
-        ✅ 合并组别+姓名为 1 题<br>
-        ✅ 新增"是否有学习意愿"前置筛选<br>
-        ✅ 工具+场景合并为 1 题<br>
-        ✅ 新增"大模型横评/术语速览/案例演示"课程需求<br>
-        ✅ 痛点题标注可跳过<br>
-        ✅ 共创意愿精简为 1 题<br>
-        <strong style="color:var(--accent2)">从 15 题 → 8 题，耗时减半</strong>
+        ✅ 工具选项刷新：豆包 / WorkBuddy / Codex / Claude Code / DeepSeek / Gemini<br>
+        ✅ 工具 + 场景拆为两题，数据更干净<br>
+        ✅ 学习意愿移至摸底之后，递进逻辑更自然<br>
+        ✅ 新增「课程定位」单选（国产 vs 全球 vs 兼顾）<br>
+        ✅ 痛点题加示例引导，降低留白率
       </p>`;
   } else if (currentTab === 'course') {
     p.innerHTML = `
