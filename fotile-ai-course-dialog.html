@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方太·职前 AI 课程 — 对话框</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #161822;
+    --bg3: #1c1f2e;
+    --border: #2a2d3a;
+    --text: #c9cdd6;
+    --text2: #8b8fa3;
+    --accent: #5b8def;
+    --accent2: #3dd68c;
+    --accent3: #ffa940;
+    --red: #e5484d;
+    --radius: 8px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Layout */
+  .app { display: flex; height: 100vh; }
+  .sidebar {
+    width: 220px; min-width: 220px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+  }
+  .main {
+    flex: 1; display: flex; flex-direction: column;
+    min-width: 0;
+  }
+  .panel {
+    width: 380px; min-width: 380px;
+    background: var(--bg2);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+  }
+
+  /* Sidebar */
+  .sb-header {
+    padding: 20px 16px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sb-logo {
+    font-size: 15px; font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.5px;
+  }
+  .sb-subtitle {
+    font-size: 11px; color: var(--text2);
+    margin-top: 2px;
+  }
+  .sb-tag {
+    display: inline-block;
+    font-size: 10px;
+    background: rgba(91,141,239,0.15);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 8px;
+  }
+  .sb-nav { flex: 1; padding: 8px 0; }
+  .sb-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    transition: all .15s;
+    border-left: 2px solid transparent;
+  }
+  .sb-nav-item:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+  .sb-nav-item.active {
+    color: var(--accent);
+    background: rgba(91,141,239,0.08);
+    border-left-color: var(--accent);
+  }
+  .sb-nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .sb-nav-badge {
+    margin-left: auto;
+    font-size: 10px;
+    background: var(--accent3);
+    color: #000;
+    padding: 1px 7px;
+    border-radius: 9px;
+    font-weight: 600;
+  }
+  .sb-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  /* Main Header */
+  .main-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    justify-content: space-between;
+  }
+  .main-title { font-size: 17px; font-weight: 600; }
+  .main-actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: var(--font);
+  }
+  .btn:hover { background: rgba(255,255,255,0.05); }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+  .btn-primary:hover { background: #4a7de0; }
+  .btn-danger { border-color: var(--red); color: var(--red); }
+  .btn-danger:hover { background: rgba(229,72,77,0.1); }
+
+  /* Content area */
+  .content { flex: 1; overflow-y: auto; padding: 24px; }
+  .content::-webkit-scrollbar { width: 5px; }
+  .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  /* Notif Preview */
+  .notif-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .notif-label {
+    font-size: 11px;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .notif-title {
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .notif-body {
+    font-size: 13.5px; line-height: 1.75;
+    color: var(--text);
+  }
+  .notif-body p { margin-bottom: 10px; }
+  .notif-body strong { color: #fff; }
+  .notif-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 14px 0;
+  }
+  .notif-quote {
+    border-left: 2px solid var(--accent3);
+    padding-left: 12px;
+    color: var(--text2);
+    font-style: italic;
+    margin: 10px 0;
+  }
+
+  /* Form builder */
+  .form-section { margin-bottom: 24px; }
+  .form-section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .form-section-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex; align-items: center;
+    justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .form-section-title { font-size: 15px; font-weight: 600; }
+  .form-section-sub { font-size: 11px; color: var(--text2); margin-left: 8px; }
+
+  .question-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex; align-items: flex-start;
+    gap: 12px;
+  }
+  .q-num {
+    font-size: 12px; font-weight: 700;
+    color: var(--accent);
+    min-width: 22px; padding-top: 1px;
+  }
+  .q-body { flex: 1; }
+  .q-title { font-size: 13px; margin-bottom: 6px; }
+  .q-type {
+    font-size: 10px;
+    color: var(--text2);
+    background: rgba(255,255,255,0.04);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .q-opts {
+    font-size: 11px; color: var(--text2);
+    margin-top: 4px;
+    line-height: 1.8;
+  }
+  .q-purpose {
+    font-size: 11px; color: var(--accent3);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* Panel: detail view */
+  .panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px; font-weight: 600;
+  }
+  .panel-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .panel-body::-webkit-scrollbar { width: 5px; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  /* Course Design Board */
+  .phase-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .phase-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .phase-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .phase-name { font-size: 14px; font-weight: 600; }
+  .phase-timeline { font-size: 11px; color: var(--text2); margin-left: auto; }
+  .module-list { list-style: none; }
+  .module-list li {
+    font-size: 12px; color: var(--text2);
+    padding: 5px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+  .module-list li::before {
+    content: '';
+    position: absolute; left: 6px; top: 11px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  /* Table */
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .tbl th {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tbl td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .tbl tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .chip {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    background: rgba(61,214,140,0.12);
+    color: var(--accent2);
+    margin: 2px;
+  }
+
+  /* Editable textarea */
+  .editable {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.7;
+    padding: 12px;
+    resize: vertical;
+    outline: none;
+  }
+  .editable:focus { border-color: var(--accent); }
+
+  /* Status indicator */
+  .status-bar {
+    display: flex; gap: 24px;
+    padding: 12px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text2);
+  }
+  .status-item { display: flex; align-items: center; gap: 6px; }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent2); color: #000;
+    padding: 8px 20px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    opacity: 0; transition: opacity .3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-header">
+      <div class="sb-logo">方太·职前 AI 课程</div>
+      <div class="sb-subtitle">群通知 & 课程设计工作台</div>
+      <span class="sb-tag">26 届校招</span>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-nav-item active" data-tab="notif">
+        <span class="sb-nav-icon">📢</span> 群通知
+        <span class="sb-nav-badge">v1</span>
+      </div>
+      <div class="sb-nav-item" data-tab="questionnaire">
+        <span class="sb-nav-icon">📋</span> 需求问卷
+        <span class="sb-nav-badge">8题</span>
+      </div>
+      <div class="sb-nav-item" data-tab="course">
+        <span class="sb-nav-icon">🎓</span> 课程设计
+      </div>
+      <div class="sb-nav-item" data-tab="partner">
+        <span class="sb-nav-icon">🤝</span> 共创伙伴
+      </div>
+      <div class="sb-nav-item" data-tab="settings">
+        <span class="sb-nav-icon">⚙</span> 配置 & 导出
+      </div>
+    </nav>
+    <div class="sb-footer">
+      截止: 7月10日 · 2026
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="main-header">
+      <span class="main-title" id="mainTitle">📢 群通知文案</span>
+      <div class="main-actions">
+        <button class="btn" onclick="copyActive()">复制到剪贴板</button>
+        <button class="btn btn-primary" onclick="exportAll()">导出全部</button>
+      </div>
+    </header>
+    <div class="content" id="mainContent"></div>
+    <div class="status-bar">
+      <span class="status-item"><span class="status-dot"></span> 状态: 草稿中</span>
+      <span class="status-item">问卷: 8 题 · 5 部分</span>
+      <span class="status-item">课程: 3 阶段 · 8 模块</span>
+      <span class="status-item">更新: 2026-07-05</span>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="panel">
+    <div class="panel-header">📌 快速参考</div>
+    <div class="panel-body" id="panelBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const data = {
+  notif: {
+    subject: '🌐 【方太·职前 AI 课程】伙伴召集 & 需求征集',
+    body: `各位 26 阳光伙伴们，大家好！☀ @所有人
+
+在我们正式迈入学习提升第三阶段的过程中，AI 正在加速迭代，现计划面向 26 届校招伙伴，搭建一套「职场转身」的 AI 课程体系。现在召集第一批课程共创伙伴！
+
+我们希望你：
+🚀 有意愿学习 AI，不要求精通或熟练使用相关工具
+🤝 秉承主动、开放、共创的精神
+📋 能配合完成需求收集（案例演示非必须，有则更好）
+🔍 愿意从不同体系视角，提供 AI 协同落地的场景需求
+
+你会参与什么：
+1. 所提需求将直接融入课程设计，真正「学你所想、解你所惑」
+2. 线上分享会的互动讨论与课程设计
+3. 与入职后 AI 课程丝滑衔接，与更多老师、伙伴一起共同学习、共同进步
+
+📅 报名截止：7 月 10 日
+
+📝 需求问卷同步开启——你的每一个想法，都会在分享会和课程中得到回应。
+
+---
+以讲解促学习，以分享共成长。
+
+期待积极热忱、有意与 AI 共成长的你加入，
+和我们一起解锁高效办公技能，助力团队共同进阶提升 ✨`,
+    editableVersion: `各位 26 阳光伙伴们，大家好！☀ @所有人
+
+在我们正式迈入学习提升第三阶段的过程中，AI 正在加速迭代，现计划面向 26 届校招伙伴，搭建一套「职场转身」的 AI 课程体系。现在召集第一批课程共创伙伴！
+
+我们希望你：
+🚀 有意愿学习 AI，不要求精通或熟练使用相关工具
+🤝 秉承主动、开放、共创的精神
+📋 能配合完成需求收集（案例演示非必须，有则更好）
+🔍 愿意从不同体系视角，提供 AI 协同落地的场景需求
+
+你会参与什么：
+1. 所提需求将直接融入课程设计，真正「学你所想、解你所惑」
+2. 线上分享会的互动讨论与课程设计
+3. 与入职后 AI 课程丝滑衔接，与更多老师、伙伴一起共同学习、共同进步
+
+📅 报名截止：7 月 10 日
+
+📝 需求问卷同步开启——你的每一个想法，都会在分享会和课程中得到回应。
+
+---
+以讲解促学习，以分享共成长。
+
+期待积极热忱、有意与 AI 共成长的你加入，
+和我们一起解锁高效办公技能，助力团队共同进阶提升 ✨`
+  },
+
+  questionnaire: {
+    parts: [
+      {
+        title: '基础信息',
+        sub: '2 题，画像 + 意愿初筛',
+        questions: [
+          { num: 1, title: '组别 / 姓名', type: '文本', opts: '', purpose: '体系分类 + 实名标识' },
+          { num: 2, title: '是否有意愿参与 AI 学习？', type: '单选', opts: '是 / 否 / 考虑中', purpose: '初筛参与人群' },
+        ]
+      },
+      {
+        title: 'AI 现状摸底',
+        sub: '2 题，能力基线 + 工具使用地图',
+        questions: [
+          { num: 3, title: '自评 AI 工具熟悉度', type: '单选 5档', opts: '完全不了解 → 偶尔使用 → 基本掌握 → 熟练使用 → 日常高频使用', purpose: '决定课程起点（扫盲 vs 进阶）' },
+          { num: 4, title: '用过哪些 AI 工具？最常用在什么场景？', type: '多选（工具）+ 多选（场景）', opts: '工具：ChatGPT / 通义千问 / Kimi / 文心一言 / Copilot / Cursor / Notion AI / 其他　｜　场景：写作润色 / 信息检索 / 数据分析 / 代码辅助 / PPT制作 / 翻译 / 其他', purpose: '摸清工具体系 & 高频应用域' },
+        ]
+      },
+      {
+        title: '课程学习需求',
+        sub: '1 题，直接决定课程内容方向',
+        questions: [
+          { num: 5, title: '如果有 AI 学习，你认为哪些内容是需要的？', type: '多选', opts: '大模型横评 / 术语速览 / 案例演示 / 其他（可补充）', purpose: '核心课程方向收集——直接决定内容权重' },
+        ]
+      },
+      {
+        title: '场景痛点深挖',
+        sub: '2 题，开放式捕获真实需求',
+        questions: [
+          { num: 6, title: '日常工作中，哪些重复性高的事让你觉得「要是有个 AI 就好了」？', type: '开放式（可跳过）', opts: '', purpose: '直接捕获痛点和真实场景' },
+          { num: 7, title: '你所在的体系中，哪些环节可能是 AI 协同的切入点？', type: '开放式（可选）', opts: '', purpose: '体系视角，拓展覆盖面' },
+        ]
+      },
+      {
+        title: '共创意愿',
+        sub: '1 题，招募课程共创伙伴',
+        questions: [
+          { num: 8, title: '是否愿意成为课程共创伙伴，参与后续课程设计与迭代？', type: '单选', opts: '是 / 否 / 考虑中', purpose: '同步完成伙伴招募' },
+        ]
+      },
+    ],
+    decisions: [
+      { item: '投放平台', options: '飞书问卷 / 腾讯问卷 / 金数据', suggest: '飞书问卷，群内直达，数据自动汇总' },
+      { item: '匿名性', options: '实名 / 匿名 / 可选', suggest: '实名制（需标注组别），便于按体系聚类分析' },
+      { item: '投放方式', options: '群内一次性发布 / 先预热再投', suggest: '配合群通知同步发布，7/5-7/10 窗口期' },
+    ]
+  },
+
+  course: {
+    phases: [
+      {
+        name: 'Phase 1 — 职前预热（入职前）',
+        color: '#5b8def',
+        timeline: '7月中旬 — 入职前',
+        modules: [
+          'AI 初识：从"是什么"到"怎么用" — 30min 扫盲',
+          '工具实操：主流 AI 工具上手（通义千问 / Kimi / Copilot）',
+          '场景案例：各体系 AI 协同真实案例分享',
+        ]
+      },
+      {
+        name: 'Phase 2 — 入职衔接（入职后 1-2 周）',
+        color: '#3dd68c',
+        timeline: '入职后 2 周内',
+        modules: [
+          '岗位 AI 工作流：按体系定向设计场景模块',
+          '协同实战：基于问卷需求的 Workshop',
+          '效率工具链整合：AI + 飞书/钉钉/文档工具链',
+        ]
+      },
+      {
+        name: 'Phase 3 — 进阶深化（入职 1-3 月）',
+        color: '#ffa940',
+        timeline: '入职后 1-3 个月',
+        modules: [
+          'AI Agent & 自动化：搭建个人 AI 助手',
+          '知识管理：用 AI 建设个人知识库',
+        ]
+      },
+    ],
+    keyPrinciples: [
+      '讲解促学习，分享共成长 — 核心驱动',
+      '需求驱动：课程内容来自问卷真实反馈',
+      '体系分层：R&D / 营销 / 供应链 / 职能各有侧重',
+      '实操 > 理论：每个模块必须有可上手的结果产出',
+    ]
+  },
+
+  partner: {
+    status: '待启动',
+    deadline: '2026-07-10',
+    roles: [
+      { role: '课程共创伙伴', desc: '参与需求调研、提供体系视角的 AI 场景需求', commitment: '低' },
+      { role: '案例演示讲师', desc: '在线上分享会演示自己的 AI 使用案例', commitment: '中' },
+      { role: '模块 co-lead', desc: '主导某个课程模块的设计与迭代', commitment: '高' },
+    ],
+    recruitment: '通过问卷 Part 4 同步筛选，报名截止后 3 天内确认名单。'
+  }
+};
+
+let currentTab = 'notif';
+
+function $(id) { return document.getElementById(id); }
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.sb-nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  renderMain();
+  renderPanel();
+}
+
+function renderMain() {
+  const m = $('mainContent');
+  const t = $('mainTitle');
+
+  if (currentTab === 'notif') {
+    t.textContent = '📢 群通知文案';
+    m.innerHTML = `
+      <div class="notif-card" style="margin-bottom:20px">
+        <div class="notif-label">通知预览（群内发送效果）</div>
+        <div class="notif-title">${data.notif.subject}</div>
+        <div class="notif-body">${data.notif.body.replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="notif-label" style="margin-bottom:8px">✏️ 可编辑版本（修改后点击复制）</div>
+      <textarea class="editable" id="editableNotif" style="height:340px">${data.notif.editableVersion}</textarea>
+    `;
+  }
+
+  else if (currentTab === 'questionnaire') {
+    t.textContent = '📋 需求问卷设计';
+    let html = '';
+    data.questionnaire.parts.forEach((part, i) => {
+      html += `<div class="form-section">
+        <div class="form-section-header">
+          <span class="form-section-num">${i+1}</span>
+          <span class="form-section-title">${part.title}</span>
+          <span class="form-section-sub">${part.sub}</span>
+        </div>`;
+      part.questions.forEach(q => {
+        html += `<div class="question-card">
+          <span class="q-num">${q.num}</span>
+          <div class="q-body">
+            <div class="q-title">${q.title} <span class="q-type">${q.type}</span></div>
+            ${q.opts ? `<div class="q-opts">选项: ${q.opts}</div>` : ''}
+            ${q.purpose ? `<div class="q-purpose">→ ${q.purpose}</div>` : ''}
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+    m.innerHTML = html;
+  }
+
+  else if (currentTab === 'course') {
+    t.textContent = '🎓 课程设计框架';
+    let html = '<div class="notif-label" style="margin-bottom:12px">核心原则</div>';
+    data.course.keyPrinciples.forEach((p, i) => {
+      html += `<div class="question-card"><span class="q-num">${i+1}</span><div class="q-body"><div class="q-title">${p}</div></div></div>`;
+    });
+    html += '<div class="notif-label" style="margin:20px 0 12px">课程阶段</div>';
+    data.course.phases.forEach(phase => {
+      html += `<div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-dot" style="background:${phase.color}"></span>
+          <span class="phase-name">${phase.name}</span>
+          <span class="phase-timeline">${phase.timeline}</span>
+        </div>
+        <ul class="module-list">
+          ${phase.modules.map(m => `<li>${m}</li>`).join('')}
+        </ul>
+      </div>`;
+    });
+    m.innerHTML = html;
+  }
+
+  else if (currentTab === 'partner') {
+    t.textContent = '🤝 共创伙伴招募';
+    let html = `<div style="display:flex;gap:16px;margin-bottom:20px">
+      <div class="notif-card" style="flex:1;margin-bottom:0">
+        <div class="notif-label">当前状态</div>
+        <div style="font-size:24px;font-weight:700;color:var(--accent3)">待启动</div>
+      </div>
+      <div class="notif-card" style="flex:1;margin-bottom:0">
+        <div class="notif-label">报名截止</div>
+        <div style="font-size:24px;font-weight:700;color:var(--accent)">7月10日</div>
+      </div>
+    </div>
+    <div class="notif-label" style="margin-bottom:10px">共创角色</div>`;
+
+    data.partner.roles.forEach(r => {
+      const cMap = { '低': 'var(--accent2)', '中': 'var(--accent3)', '高': 'var(--accent)' };
+      html += `<div class="question-card">
+        <span class="q-num" style="color:${cMap[r.commitment]}">●</span>
+        <div class="q-body">
+          <div class="q-title">${r.role} <span class="chip">投入: ${r.commitment}</span></div>
+          <div class="q-opts">${r.desc}</div>
+        </div>
+      </div>`;
+    });
+
+    html += `<div class="notif-card" style="margin-top:16px">
+      <div class="notif-label">招募方式</div>
+      <div class="notif-body">${data.partner.recruitment}</div>
+    </div>`;
+    m.innerHTML = html;
+  }
+
+  else if (currentTab === 'settings') {
+    t.textContent = '⚙ 配置 & 待确认事项';
+    let html = '<div class="notif-label" style="margin-bottom:10px">待确认事项</div>';
+    html += '<table class="tbl"><thead><tr><th>事项</th><th>选项</th><th>建议</th></tr></thead><tbody>';
+    data.questionnaire.decisions.forEach(d => {
+      const opts = d.options.split(' / ').map(o => `<span class="chip" style="margin:1px">${o}</span>`).join(' ');
+      html += `<tr><td style="font-weight:600">${d.item}</td><td>${opts}</td><td style="color:var(--accent2)">→ ${d.suggest}</td></tr>`;
+    });
+    html += '</tbody></table>';
+
+    html += `<div class="notif-label" style="margin:24px 0 10px">数据导出</div>`;
+    html += `<div class="notif-card" style="margin-bottom:0">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:8px">将当前全部设计数据导出为 JSON，用于后续程序化处理和平台对接。</p>
+      <button class="btn btn-primary" onclick="exportJSON()">导出 JSON</button>
+    </div>`;
+    m.innerHTML = html;
+  }
+}
+
+function renderPanel() {
+  const p = $('panelBody');
+  if (currentTab === 'notif') {
+    p.innerHTML = `
+      <div class="notif-label" style="margin-bottom:8px">发送渠道建议</div>
+      <table class="tbl"><tbody>
+        <tr><td style="font-weight:600;color:var(--text)">主渠道</td><td>飞书群（26届阳光总群）</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">辅助</td><td>企业微信 / 钉钉 同步</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">格式</td><td>飞书交互式卡片</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">频率</td><td>发布 1 次 + 截止前 2 天提醒</td></tr>
+      </tbody></table>
+      <div class="notif-label" style="margin:16px 0 8px">发送时间</div>
+      <table class="tbl"><tbody>
+        <tr><td style="font-weight:600;color:var(--accent2)">首轮</td><td>7月5日（今天）</td></tr>
+        <tr><td style="font-weight:600;color:var(--accent3)">提醒</td><td>7月8日</td></tr>
+        <tr><td style="font-weight:600;color:var(--red)">截止</td><td>7月10日 24:00</td></tr>
+      </tbody></table>`;
+  } else if (currentTab === 'questionnaire') {
+    p.innerHTML = `
+      <div class="notif-label" style="margin-bottom:8px">问卷参数</div>
+      <table class="tbl"><tbody>
+        <tr><td style="font-weight:600;color:var(--text)">总题数</td><td>8 题（核心）</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">预计耗时</td><td>3–5 分钟</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">结构</td><td>5 段式：信息 → 基线 → 需求 → 痛点 → 招募</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">风格</td><td>聚焦精简，每题有目的</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">目标人群</td><td>26届校招，岗位体系多元</td></tr>
+      </tbody></table>
+      <div class="notif-label" style="margin:16px 0 8px">问题类型分布</div>
+      <table class="tbl"><tbody>
+        <tr><td>文本</td><td>1 题</td></tr>
+        <tr><td>单选</td><td>3 题（意愿/熟悉度/共创）</td></tr>
+        <tr><td>多选</td><td>2 题（工具+场景/学习需求）</td></tr>
+        <tr><td>开放式</td><td>2 题（含1题可跳过+1题可选）</td></tr>
+      </tbody></table>
+      <div class="notif-label" style="margin:16px 0 8px">核心变化</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.8">
+        对比原版 15 题：<br>
+        ✅ 合并组别+姓名为 1 题<br>
+        ✅ 新增"是否有学习意愿"前置筛选<br>
+        ✅ 工具+场景合并为 1 题<br>
+        ✅ 新增"大模型横评/术语速览/案例演示"课程需求<br>
+        ✅ 痛点题标注可跳过<br>
+        ✅ 共创意愿精简为 1 题<br>
+        <strong style="color:var(--accent2)">从 15 题 → 8 题，耗时减半</strong>
+      </p>`;
+  } else if (currentTab === 'course') {
+    p.innerHTML = `
+      <div class="notif-label" style="margin-bottom:8px">体系定向模块（计划）</div>
+      <table class="tbl"><tbody>
+        <tr><td style="font-weight:600;color:var(--accent)">R&D</td><td>代码辅助 / 技术调研 / 自动化脚本</td></tr>
+        <tr><td style="font-weight:600;color:var(--accent2)">营销</td><td>文案生成 / 数据分析 / 竞品调研</td></tr>
+        <tr><td style="font-weight:600;color:var(--accent3)">供应链</td><td>数据处理 / 需求预测 / 报表自动化</td></tr>
+        <tr><td style="font-weight:600;color:#a78bfa">职能</td><td>会议纪要 / 文档写作 / PPT制作</td></tr>
+      </tbody></table>
+      <div class="notif-label" style="margin:16px 0 8px">交付物</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6">
+        每阶段有明确产出：<br>
+        Phase 1 → 个人 AI 工具清单 & 上手体验<br>
+        Phase 2 → 岗位 AI 工作流文档<br>
+        Phase 3 → 个人 AI 助手 / 知识库
+      </p>`;
+  } else if (currentTab === 'partner') {
+    p.innerHTML = `
+      <div class="notif-label" style="margin-bottom:8px">筛选标准草案</div>
+      <table class="tbl"><tbody>
+        <tr><td>必要条件</td><td>26届校招 + 自愿报名</td></tr>
+        <tr><td>加分项</td><td>有 AI 使用案例 / 跨体系视角</td></tr>
+        <tr><td>核心素质</td><td>主动、开放、共创精神</td></tr>
+      </tbody></table>
+      <div class="notif-label" style="margin:16px 0 8px">后续沟通</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6">
+        确认名单后建专群沟通。<br>
+        首次线上分享会预计 7 月中下旬。<br>
+        共创伙伴获课程资料优先访问权。
+      </p>`;
+  } else if (currentTab === 'settings') {
+    p.innerHTML = `
+      <div class="notif-label" style="margin-bottom:8px">技术实现建议</div>
+      <table class="tbl"><tbody>
+        <tr><td style="font-weight:600;color:var(--text)">问卷平台</td><td>飞书问卷 → 自动汇总到多维表格</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">通知发送</td><td>飞书群 + 飞书交互式卡片</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">数据存储</td><td>飞书多维表格 / Base</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">课程交付</td><td>飞书文档 + 线上分享会（飞书视频会议）</td></tr>
+        <tr><td style="font-weight:600;color:var(--text)">后续迭代</td><td>问卷数据 → 驱动课程内容调整</td></tr>
+      </tbody></table>`;
+  }
+}
+
+function copyActive() {
+  let text;
+  if (currentTab === 'notif') {
+    const ta = $('editableNotif');
+    text = ta ? ta.value : data.notif.editableVersion;
+  } else {
+    text = JSON.stringify(data[currentTab], null, 2);
+  }
+  navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板 ✓'));
+}
+
+function exportAll() {
+  const exportData = {
+    exported_at: new Date().toISOString(),
+    project: '方太·职前 AI 课程',
+    ...data
+  };
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'fotile-ai-course-design.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('已导出 fotile-ai-course-design.json ✓');
+}
+
+function exportJSON() {
+  exportAll();
+}
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Init
+document.querySelectorAll('.sb-nav-item').forEach(el => {
+  el.addEventListener('click', () => switchTab(el.dataset.tab));
+});
+
+renderMain();
+renderPanel();
+</script>
+</body>
+</html>
